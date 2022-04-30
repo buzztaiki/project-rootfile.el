@@ -5,7 +5,7 @@
 ;; Author: Taiki Sugawara <buzz.taiki@gmail.com>
 ;; URL: https://github.com/buzztaiki/project-rootfile.el
 ;; Version: 0.0.1
-;; Package-Requires: ((emacs "28.1"))
+;; Package-Requires: ((emacs "27.1"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -34,8 +34,6 @@
 ;;      (add-to-list 'project-find-functions #'project-rootfile-try)
 
 ;; TODO:
-;; - Support Emacs version < 28.1?
-;;   `project-root' is introduced from this version
 ;; - Add more files to `project-rootfile-list'.
 
 ;;; Code:
@@ -67,10 +65,14 @@ Return an instance of `project-rootfile' if DIR is it's target."
          (make-project-rootfile :root (car (sort roots (lambda (a b) (> (length a) (length b)))))
                                 :base (project-try-vc dir)))))
 
-               
 (cl-defmethod project-root ((project project-rootfile))
   "Return root directory of the current PROJECT."
   (project-rootfile-root project))
+
+(when (< emacs-major-version 28)
+  (cl-defmethod project-roots ((project project-rootfile))
+    "Return the list containing the current PROJECT root."
+    (list (project-rootfile-root project))))
 
 (cl-defmethod project-external-roots ((_project project-rootfile))
   "Return the list of external roots for PROJECT."
@@ -86,10 +88,10 @@ Return an instance of `project-rootfile' if DIR is it's target."
 (cl-defmethod project-files ((project project-rootfile) &optional dirs)
   "Return a list of files in directories DIRS in PROJECT."
   (let ((base (project-rootfile-base project))
-        (dirs (or dirs (list (project-root project)))))
+        (dirs (or dirs (list (project-rootfile-root project)))))
     (if (null base)
         (cl-call-next-method)
-      (project-files base (or dirs (list (project-root project)))))))
+      (project-files base (or dirs (list (project-rootfile-root project)))))))
 
 (provide 'project-rootfile)
 ;;; project-rootfile.el ends here
