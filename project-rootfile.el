@@ -59,9 +59,9 @@
 
 
 ;;;###autoload
-;; TODO: naming
-(defun project-rootfile-try (dir)
-  "Return an instance of `project-rootfile' if determine DIR is it's target."
+(defun project-rootfile-try-detect (dir)
+  "Entry point of `project-find-functions' for `project-rootfile'.
+Return an instance of `project-rootfile' if DIR is it's target."
   (let ((roots (delq nil (mapcar (lambda (x) (locate-dominating-file dir x)) project-rootfile-list))))
     (and roots
          (make-project-rootfile :root (car (sort roots (lambda (a b) (> (length a) (length b)))))
