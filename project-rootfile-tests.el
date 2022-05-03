@@ -64,8 +64,7 @@
       (call-process-shell-command "git init"))
     (make-empty-file (expand-file-name "Makefile" dir))
     (let ((project (project-rootfile-try-detect dir)))
-      (should (equal (project-rootfile-base project) (project-try-vc dir)))
-      (should (equal (project-root (project-rootfile-base project)) (file-name-as-directory dir))))))
+      (should (equal (project-rootfile-base project) (project-try-vc dir))))))
 
 (ert-deftest test-project-rootfile-try-detect/git-monorepo ()
   (project-rootfile-tests-with-tempdir (dir)
@@ -77,14 +76,12 @@
       (make-empty-file (expand-file-name "Makefile" sub-project2-dir))
 
       (let ((project (project-rootfile-try-detect sub-project1-dir)))
-        (should (string= (project-root project) (file-name-as-directory sub-project1-dir)))
-        (should (equal (project-rootfile-base project) (project-try-vc dir)))
-        (should (equal (project-root (project-rootfile-base project)) (file-name-as-directory dir))))
+        (should (string= (project-rootfile-root project) (file-name-as-directory sub-project1-dir)))
+        (should (equal (project-rootfile-base project) (project-try-vc dir))))
 
       (let ((project (project-rootfile-try-detect sub-project2-dir)))
-        (should (string= (project-root project) (file-name-as-directory sub-project2-dir)))
-        (should (equal (project-rootfile-base project) (project-try-vc dir)))
-        (should (equal (project-root (project-rootfile-base project)) (file-name-as-directory dir)))))))
+        (should (string= (project-rootfile-root project) (file-name-as-directory sub-project2-dir)))
+        (should (equal (project-rootfile-base project) (project-try-vc dir)))))))
 
 (ert-deftest test-project-rootfile/project-current ()
   (project-rootfile-tests-with-tempdir (dir)
