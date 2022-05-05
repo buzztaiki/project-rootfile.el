@@ -27,13 +27,14 @@
 (require 'project-rootfile)
 
 
-(defmacro project-rootfile-tests-with-tempdir (spec &rest body)
-  "Eval BODY with temporary directory DIRVAR.
+(defmacro project-rootfile-tests-with-setup (spec &rest body)
+  "Setup test and eval BODY with temporary directory DIRVAR.
 
 \(fn (DIRVAR) BODY...)"
   (declare (indent 1) (debug ((symbolp) body)))
   (let ((dirvar (car spec)))
-    `(let ((,dirvar (expand-file-name (make-temp-name "project-rootfile-") temporary-file-directory)))
+    `(let ((,dirvar (expand-file-name (make-temp-name "project-rootfile-") temporary-file-directory))
+           (project-rootfile-list '("Makefile" "debian/control")))
        (unwind-protect
            (progn
              (make-directory ,dirvar)
@@ -41,7 +42,7 @@
          (delete-directory ,dirvar t)))))
 
 (ert-deftest test-project-rootfile-try-detect ()
-  (project-rootfile-tests-with-tempdir (dir)
+  (project-rootfile-tests-with-setup (dir)
     (should (null (project-rootfile-try-detect dir)))
 
     (make-empty-file (expand-file-name "Makefile" dir))
@@ -52,20 +53,20 @@
       (should (null (project-rootfile-base project))))))
 
 (ert-deftest test-project-rootfile-try-detect/inside-child-dir ()
-  (project-rootfile-tests-with-tempdir (dir)
+  (project-rootfile-tests-with-setup (dir)
     (make-empty-file (expand-file-name "Makefile" dir))
     (make-directory (expand-file-name "child" dir))
     (let ((project (project-rootfile-try-detect (expand-file-name "child" dir))))
       (should (string= (project-root project) (file-name-as-directory dir))))))
 
 (ert-deftest test-project-rootfile-try-detect/nested-root-file ()
-  (project-rootfile-tests-with-tempdir (dir)
+  (project-rootfile-tests-with-setup (dir)
     (make-empty-file (expand-file-name "debian/control" dir) t)
     (let ((project (project-rootfile-try-detect dir)))
       (should (string= (project-root project) (file-name-as-directory dir))))))
 
 (ert-deftest test-project-rootfile-try-detect/inside-git ()
-  (project-rootfile-tests-with-tempdir (dir)
+  (project-rootfile-tests-with-setup (dir)
     (let ((default-directory dir))
       (call-process-shell-command "git init"))
     (make-empty-file (expand-file-name "Makefile" dir))
@@ -73,7 +74,7 @@
       (should (equal (project-rootfile-base project) (project-try-vc dir))))))
 
 (ert-deftest test-project-rootfile-try-detect/git-monorepo ()
-  (project-rootfile-tests-with-tempdir (dir)
+  (project-rootfile-tests-with-setup (dir)
     (let ((default-directory dir))
       (call-process-shell-command "git init"))
     (let ((sub-project1-dir (expand-file-name "sub-project1" dir))
@@ -90,19 +91,19 @@
         (should (equal (project-rootfile-base project) (project-try-vc dir)))))))
 
 (ert-deftest test-project-rootfile/project-current ()
-  (project-rootfile-tests-with-tempdir (dir)
+  (project-rootfile-tests-with-setup (dir)
     (make-empty-file (expand-file-name "Makefile" dir))
     (let ((project-find-functions '(project-rootfile-try-detect)))
       (should (project-current nil dir)))))
 
 (ert-deftest test-project-rootfile/project-ignores ()
-  (project-rootfile-tests-with-tempdir (dir)
+  (project-rootfile-tests-with-setup (dir)
     (make-empty-file (expand-file-name "Makefile" dir))
     (let ((project (project-rootfile-try-detect dir)))
       (should (member "*~" (project-ignores project dir))))))
 
 (ert-deftest test-project-rootfile/project-ignores/inside-git ()
-  (project-rootfile-tests-with-tempdir (dir)
+  (project-rootfile-tests-with-setup (dir)
     (let ((default-directory dir))
       (call-process-shell-command "git init"))
     (make-empty-file (expand-file-name "Makefile" dir))
@@ -114,14 +115,14 @@
       (should (member ignore (project-ignores project dir))))))
 
 (ert-deftest test-project-rootfile/project-files ()
-  (project-rootfile-tests-with-tempdir (dir)
+  (project-rootfile-tests-with-setup (dir)
     (make-empty-file (expand-file-name "Makefile" dir))
     (let ((project (project-rootfile-try-detect dir)))
       (should (equal (project-files project) (list (expand-file-name "Makefile" dir))))
       (should (equal (project-files project (list dir)) (list (expand-file-name "Makefile" dir)))))))
 
 (ert-deftest test-project-rootfile/project-files/inside-git ()
-  (project-rootfile-tests-with-tempdir (dir)
+  (project-rootfile-tests-with-setup (dir)
     (let ((default-directory dir))
       (call-process-shell-command "git init"))
     (make-empty-file (expand-file-name "Makefile" dir))
