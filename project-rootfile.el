@@ -82,10 +82,13 @@
 (defun project-rootfile-try-detect (dir)
   "Entry point of `project-find-functions' for `project-rootfile'.
 Return an instance of `project-rootfile' if DIR is it's target."
-  (let ((roots (delq nil (mapcar (lambda (x) (locate-dominating-file dir x)) project-rootfile-list))))
-    (and roots
-         (make-project-rootfile :root (car (sort roots (lambda (a b) (> (length a) (length b)))))
-                                :base (project-try-vc dir)))))
+  (when-let (root (locate-dominating-file dir #'project-rootfile--root-p))
+    (make-project-rootfile :root root :base (project-try-vc dir))))
+
+(defun project-rootfile--root-p (dir)
+  "Return non-nil if DIR is a project root."
+  (seq-some (lambda (f) (file-exists-p (expand-file-name f dir)))
+            project-rootfile-list))
 
 (cl-defmethod project-root ((project project-rootfile))
   "Return root directory of the current PROJECT."
