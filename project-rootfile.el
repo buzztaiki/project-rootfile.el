@@ -114,8 +114,7 @@ Return an instance of `project-rootfile' if DIR is it's target."
 
 (cl-defmethod project-files ((project project-rootfile) &optional dirs)
   "Return a list of files in directories DIRS in PROJECT."
-  (let ((base (project-rootfile-base project))
-        (dirs (or dirs (list (project-rootfile-root project)))))
+  (let ((base (project-rootfile-base project)))
     (if (null base)
         (cl-call-next-method)
       (project-files base (or dirs (list (project-rootfile-root project)))))))
