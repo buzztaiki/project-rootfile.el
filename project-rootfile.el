@@ -27,14 +27,11 @@
 ;; Usage:
 ;; If you prefer VCS root over root file for project detection, add the following to your init file:
 ;;
-;;      (add-to-list 'project-find-functions #'project-rootfile-try t)
+;;      (add-to-list 'project-find-functions #'project-rootfile-try-detect t)
 ;;
 ;; Otherwise, if you prefer a root file, add the following:
 ;;
-;;      (add-to-list 'project-find-functions #'project-rootfile-try)
-
-;; TODO:
-;; - Add more files to `project-rootfile-list'.
+;;      (add-to-list 'project-find-functions #'project-rootfile-try-detect)
 
 ;;; Code:
 
