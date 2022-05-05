@@ -51,11 +51,17 @@
       (should (string= (project-rootfile-root project) (file-name-as-directory dir)))
       (should (null (project-rootfile-base project))))))
 
-(ert-deftest test-project-rootfile-try-detect/child-dir ()
+(ert-deftest test-project-rootfile-try-detect/inside-child-dir ()
   (project-rootfile-tests-with-tempdir (dir)
     (make-empty-file (expand-file-name "Makefile" dir))
     (make-directory (expand-file-name "child" dir))
     (let ((project (project-rootfile-try-detect (expand-file-name "child" dir))))
+      (should (string= (project-root project) (file-name-as-directory dir))))))
+
+(ert-deftest test-project-rootfile-try-detect/nested-root-file ()
+  (project-rootfile-tests-with-tempdir (dir)
+    (make-empty-file (expand-file-name "debian/control" dir) t)
+    (let ((project (project-rootfile-try-detect dir)))
       (should (string= (project-root project) (file-name-as-directory dir))))))
 
 (ert-deftest test-project-rootfile-try-detect/inside-git ()
