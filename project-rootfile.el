@@ -43,32 +43,34 @@
   :group 'project)
 
 (defcustom project-rootfile-list
-  '("TAGS" "GTAGS"                                                              ; etags / ctags / GNU Global
-    "configure.ac" "configure.in"                                               ; autoconf
-    "cscope.out"                                                                ; cscope
-    "SConstruct"                                                                ; scons
-    "meson.build"                                                               ; meson
-    "default.nix" "flake.nix"                                                   ; nix
-    "WORKSPACE"                                                                 ; bazel
-    "debian/control"                                                            ; debian
-    "Makefile" "GNUMakefile" "CMakeLists.txt"                                   ; Make & CMake
-    "composer.json"                                                             ; PHP
-    "rebar.config" "mix.exs"                                                    ; Erlang & Elixir
-    "Gruntfile.js" "gulpfile.js" "package.json" "angular.json"                  ; JavaScript
-    "manage.py" "requirements.txt" "setup.py" "tox.ini" "Pipfile" "poetry.lock" ; Python
-    "pom.xml" "build.gradle" "gradlew" "application.yml"                        ; Java & friends
-    "build.sbt" "build.sc"                                                      ; Scala
-    "project.clj" "build.boot" "deps.edn" ".bloop"                              ; Clojure
-    "Gemfile"                                                                   ; Ruby
-    "shard.yml"                                                                 ; Crystal
-    "Cask" "Eldev" "Keg" "Eask"                                                 ; Emacs
-    "DESCRIPTION"                                                               ; R
-    "stack.yaml"                                                                ; Haskell
-    "Cargo.toml"                                                                ; Rust
-    "info.rkt"                                                                  ; Racket
-    "pubspec.yaml"                                                              ; Dart
-    "dune-project"                                                              ; OCaml
-    "go.mod"                                                                    ; Go
+  '("TAGS" "GTAGS"                                          ; tags
+    "configure.ac" "configure.in"                           ; autoconf
+    "cscope.out"                                            ; cscope
+    "SConstruct"                                            ; scons
+    "meson.build"                                           ; meson
+    "default.nix" "flake.nix"                               ; nix
+    "WORKSPACE"                                             ; bazel
+    "debian/control"                                        ; debian
+    "Makefile" "GNUMakefile" "CMakeLists.txt"               ; Make & CMake
+    "composer.json"                                         ; PHP
+    "rebar.config" "mix.exs"                                ; Erlang & Elixir
+    "Gruntfile.js" "gulpfile.js" "package.json" "angular.json"
+                                                            ; JavaScript
+    "manage.py" "requirements.txt" "setup.py" "tox.ini" "Pipfile" "poetry.lock"
+                                                            ; Python
+    "pom.xml" "build.gradle" "gradlew" "application.yml"    ; Java & friends
+    "build.sbt" "build.sc"                                  ; Scala
+    "project.clj" "build.boot" "deps.edn" ".bloop"          ; Clojure
+    "Gemfile"                                               ; Ruby
+    "shard.yml"                                             ; Crystal
+    "Cask" "Eldev" "Keg" "Eask"                             ; Emacs
+    "DESCRIPTION"                                           ; R
+    "stack.yaml"                                            ; Haskell
+    "Cargo.toml"                                            ; Rust
+    "info.rkt"                                              ; Racket
+    "pubspec.yaml"                                          ; Dart
+    "dune-project"                                          ; OCaml
+    "go.mod"                                                ; Go
     )
   "A list of files considered to mark the root of a project."
   :group 'project-rootfile
@@ -122,6 +124,6 @@ Return an instance of `project-rootfile' if DIR is it's target."
 ;;; project-rootfile.el ends here
 
 ;; Local Variables:
-;; comment-column: 70
-;; fill-column: 120
+;; comment-column: 60
+;; fill-column: 80
 ;; End:
