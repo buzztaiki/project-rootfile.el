@@ -64,7 +64,7 @@
     "project.clj" "build.boot" "deps.edn" ".bloop"                              ; Clojure
     "Gemfile"                                                                   ; Ruby
     "shard.yml"                                                                 ; Crystal
-    "Cask" "Eldev"                                                              ; Emacs
+    "Cask" "Eldev" "Keg" "Eask"                                                 ; Emacs
     "DESCRIPTION"                                                               ; R
     "stack.yaml"                                                                ; Haskell
     "Cargo.toml"                                                                ; Rust
