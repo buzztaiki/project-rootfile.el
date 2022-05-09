@@ -90,7 +90,9 @@
   :type '(repeat :type string))
 
 (cl-defstruct project-rootfile
-  root base)
+  "Project backend to detect project root with root file."
+  (root nil :documentation "Root directory of this project")
+  (base nil :documentation "Instance of VC project backend that contains this project, or nil if not exists."))
 
 ;;;###autoload
 (defun project-rootfile-try-detect (dir)
