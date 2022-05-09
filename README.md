@@ -1,4 +1,5 @@
 # project-rootfile
+[![MELPA](https://melpa.org/packages/project-rootfile-badge.svg)](https://melpa.org/#/project-rootfile)
 
 Extension of `project.el` to detect project root with root file (e.g. `Gemfile`).
 
