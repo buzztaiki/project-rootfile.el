@@ -1,4 +1,4 @@
-;;; project-rootfile.el --- Project backend by root file  -*- lexical-binding: t; -*-
+;;; project-rootfile.el --- Extension of project.el to detect project with root file  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2022  Taiki Sugawara
 
@@ -22,16 +22,29 @@
 
 ;;; Commentary:
 
-;; A project backend that uses a root file (e.g. Gemfile) for detection.
+;; Extension of `project' to detect project root with root file (e.g. Gemfile).
+;;
+;; It is useful when editing files outside of VCS.  And it may also be useful if
+;; you are using monorepo.  It is very smiller to Projectile's
+;; 'projectile-root-top-down', but it relies on the Emacs standard `project'.
 
 ;; Usage:
-;; If you prefer VCS root over root file for project detection, add the following to your init file:
+;;
+;; As is the default for Projectile, you prefer a VCS root over a root file
+;; for project detection, add the following to your init file:
 ;;
 ;;      (add-to-list 'project-find-functions #'project-rootfile-try-detect t)
 ;;
 ;; Otherwise, if you prefer a root file, add the following:
 ;;
 ;;      (add-to-list 'project-find-functions #'project-rootfile-try-detect)
+;;
+;; For more information, please see <https://github.com/buzztaiki/project-rootfile.el>.
+
+;;; Credit:
+
+;; `project-rootfile-list' is heavily taken from Projectile's `projectile-project-root-files'. Thanks!
+
 
 ;;; Code:
 
@@ -39,7 +52,7 @@
 (require 'cl-lib)
 
 (defgroup project-rootfile nil
-  "Project backend by root file."
+  "Extension of `project' to detect project root with root file (e.g. Gemfile)."
   :group 'project)
 
 (defcustom project-rootfile-list
@@ -77,7 +90,6 @@
   :type '(repeat :type string))
 
 (cl-defstruct project-rootfile
-  "Project backend by root file."
   root base)
 
 ;;;###autoload
