@@ -78,6 +78,7 @@
     "shard.yml"                                             ; Crystal
     "Cask" "Eldev" "Keg" "Eask"                             ; Emacs
     "DESCRIPTION"                                           ; R
+    "bower.json" "psc-package.json" "spago.dhall"           ; PureScript
     "stack.yaml"                                            ; Haskell
     "Cargo.toml"                                            ; Rust
     "info.rkt"                                              ; Racket
