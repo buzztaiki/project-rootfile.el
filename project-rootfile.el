@@ -99,19 +99,25 @@
 (defun project-rootfile-try-detect (dir)
   "Entry point of `project-find-functions' for `project-rootfile'.
 Return an instance of `project-rootfile' if DIR is it's target."
-  (when-let (root (locate-dominating-file dir #'project-rootfile--root-p))
-    (make-project-rootfile :root root :base (project-try-vc dir))))
+  (let* ((base (project-try-vc dir))
+         (stop-dir (and base (car (with-no-warnings (project-roots base))))))
+    (when-let (root (locate-dominating-file dir (lambda (d) (project-rootfile--root-p d stop-dir))))
+      (make-project-rootfile :root root :base base))))
 
-(defun project-rootfile--root-p (dir)
-  "Return non-nil if DIR is a project root."
-  (seq-some (lambda (f) (file-exists-p (expand-file-name f dir)))
-            project-rootfile-list))
+(defun project-rootfile--root-p (dir &optional stop-dir)
+  "Return non-nil if DIR is a project root.
+If STOP-DIR is specified, return nil if DIR is not a subdirectory of it."
+  (and (or (null stop-dir)
+           (file-in-directory-p dir stop-dir))
+       (seq-some (lambda (f) (file-exists-p (expand-file-name f dir)))
+                 project-rootfile-list)))
 
-(cl-defmethod project-root ((project project-rootfile))
-  "Return root directory of the current PROJECT."
-  (project-rootfile-root project))
+(when (cl-generic-p 'project-root)
+  (cl-defmethod project-root ((project project-rootfile))
+    "Return root directory of the current PROJECT."
+    (project-rootfile-root project)))
 
-(when (< emacs-major-version 28)
+(with-no-warnings
   (cl-defmethod project-roots ((project project-rootfile))
     "Return the list containing the current PROJECT root."
     (list (project-rootfile-root project))))
