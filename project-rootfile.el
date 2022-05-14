@@ -100,7 +100,7 @@
   "Entry point of `project-find-functions' for `project-rootfile'.
 Return an instance of `project-rootfile' if DIR is it's target."
   (let* ((base (project-try-vc dir))
-         (stop-dir (and base (car (project-roots base)))))
+         (stop-dir (and base (car (with-no-warnings (project-roots base))))))
     (when-let (root (locate-dominating-file dir (lambda (d) (project-rootfile--root-p d stop-dir))))
       (make-project-rootfile :root root :base base))))
 
@@ -112,11 +112,12 @@ If STOP-DIR is specified, return nil if DIR is not a subdirectory of it."
        (seq-some (lambda (f) (file-exists-p (expand-file-name f dir)))
                  project-rootfile-list)))
 
-(cl-defmethod project-root ((project project-rootfile))
-  "Return root directory of the current PROJECT."
-  (project-rootfile-root project))
+(when (cl-generic-p 'project-root)
+  (cl-defmethod project-root ((project project-rootfile))
+    "Return root directory of the current PROJECT."
+    (project-rootfile-root project)))
 
-(when (< emacs-major-version 28)
+(with-no-warnings
   (cl-defmethod project-roots ((project project-rootfile))
     "Return the list containing the current PROJECT root."
     (list (project-rootfile-root project))))
