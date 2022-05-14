@@ -122,25 +122,33 @@ If STOP-DIR is specified, return nil if DIR is not a subdirectory of it."
     "Return the list containing the current PROJECT root."
     (list (project-rootfile-root project))))
 
+(defun project-rootfile--as-vc-project (project)
+  "Return as VC project backend of PROJECT."
+  (let ((base (project-rootfile-base project))
+        (root (project-rootfile-root project)))
+    (pcase base
+      ((pred null) nil)
+      (`(vc ,backend ,_vc-root) (list 'vc backend root))
+      (`(vc . ,_vc-root) (cons 'vc root))
+      (_ (error "Unknown VCS project pattern %s" base)))))
+
 (cl-defmethod project-external-roots ((_project project-rootfile))
   "Return the list of external roots for PROJECT."
   (cl-call-next-method))
 
 (cl-defmethod project-ignores ((project project-rootfile) dir)
   "Return the list of glob patterns to ignore inside DIR for PROJECT."
-  (let ((base (project-rootfile-base project))
-        (root (project-rootfile-root project)))
-    (if (null base)
+  (let ((vc-project (project-rootfile--as-vc-project project)))
+    (if (null vc-project)
         (cl-call-next-method)
-      (project-ignores (cons 'vc root) dir))))
+      (project-ignores vc-project dir))))
 
 (cl-defmethod project-files ((project project-rootfile) &optional dirs)
   "Return a list of files in directories DIRS in PROJECT."
-  (let ((base (project-rootfile-base project))
-        (root (project-rootfile-root project)))
-    (if (null base)
+  (let ((vc-project (project-rootfile--as-vc-project project)))
+    (if (null vc-project)
         (cl-call-next-method)
-      (project-files (cons 'vc root) (or dirs (list root))))))
+      (project-files vc-project dirs))))
 
 (provide 'project-rootfile)
 ;;; project-rootfile.el ends here
