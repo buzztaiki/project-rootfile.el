@@ -88,6 +88,16 @@
         (should (string= (project-rootfile-root project) (file-name-as-directory sub-project2-dir)))
         (should (equal (project-rootfile-base project) (project-try-vc dir)))))))
 
+(ert-deftest test-project-rootfile-try-detect/stop-detection-at-vcs-directory ()
+  (project-rootfile-tests-with-setup (dir)
+    (make-empty-file (expand-file-name "Makefile" dir))
+    (make-directory (expand-file-name "vcs/child" dir) t)
+    (let ((default-directory (expand-file-name "vcs" dir)))
+      (call-process-shell-command "git init"))
+    (should (project-rootfile-try-detect dir))
+    (should-not (project-rootfile-try-detect (expand-file-name "vcs" dir)))
+    (should-not (project-rootfile-try-detect (expand-file-name "vcs/child" dir)))))
+
 (ert-deftest test-project-rootfile/project-current ()
   (project-rootfile-tests-with-setup (dir)
     (make-empty-file (expand-file-name "Makefile" dir))
