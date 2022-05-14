@@ -136,12 +136,16 @@
 
 (ert-deftest test-project-rootfile/project-files/git-monorepo ()
   (project-rootfile-tests-with-setup (dir :inside-git t)
-    (let ((sub-project-dir (expand-file-name "sub-project" dir)))
+    (let ((sub-project-dir (expand-file-name "sub-project" dir))
+          (ignore (make-temp-name "ignore-")))
       (make-empty-file (expand-file-name "README.md" dir))
       (make-empty-file (expand-file-name "Makefile" sub-project-dir))
-
+      (make-empty-file (expand-file-name ignore sub-project-dir))
+      (with-temp-file (expand-file-name ".gitignore" sub-project-dir)
+        (insert ignore))
       (let ((project (project-rootfile-try-detect sub-project-dir)))
-        (should (equal (project-files project) (list (expand-file-name "Makefile" sub-project-dir))))))))
+        (should (seq-set-equal-p (project-files project) (list (expand-file-name "Makefile" sub-project-dir)
+                                                               (expand-file-name ".gitignore" sub-project-dir))))))))
 
 (provide 'project-rootfile-tests)
 ;;; project-rootfile-tests.el ends here

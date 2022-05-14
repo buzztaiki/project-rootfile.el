@@ -128,17 +128,19 @@ If STOP-DIR is specified, return nil if DIR is not a subdirectory of it."
 
 (cl-defmethod project-ignores ((project project-rootfile) dir)
   "Return the list of glob patterns to ignore inside DIR for PROJECT."
-  (let ((base (project-rootfile-base project)))
+  (let ((base (project-rootfile-base project))
+        (root (project-rootfile-root project)))
     (if (null base)
         (cl-call-next-method)
-      (project-ignores base dir))))
+      (project-ignores (cons 'vc root) dir))))
 
 (cl-defmethod project-files ((project project-rootfile) &optional dirs)
   "Return a list of files in directories DIRS in PROJECT."
-  (let ((base (project-rootfile-base project)))
+  (let ((base (project-rootfile-base project))
+        (root (project-rootfile-root project)))
     (if (null base)
         (cl-call-next-method)
-      (project-files base (or dirs (list (project-rootfile-root project)))))))
+      (project-files (cons 'vc root) (or dirs (list root))))))
 
 (provide 'project-rootfile)
 ;;; project-rootfile.el ends here
