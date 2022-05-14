@@ -27,19 +27,21 @@
 (require 'project-rootfile)
 
 
-(defmacro project-rootfile-tests-with-setup (spec &rest body)
+(cl-defmacro project-rootfile-tests-with-setup ((dirvar &key (inside-git nil)) &rest body)
   "Setup test and eval BODY with temporary directory DIRVAR.
 
 \(fn (DIRVAR) BODY...)"
   (declare (indent 1) (debug ((symbolp) body)))
-  (let ((dirvar (car spec)))
-    `(let ((,dirvar (expand-file-name (make-temp-name "project-rootfile-") temporary-file-directory))
-           (project-rootfile-list '("Makefile" "debian/control")))
-       (unwind-protect
-           (progn
-             (make-directory ,dirvar)
-             ,@body)
-         (delete-directory ,dirvar t)))))
+  `(let ((,dirvar (expand-file-name (make-temp-name "project-rootfile-") temporary-file-directory))
+         (project-rootfile-list '("Makefile" "debian/control")))
+     (unwind-protect
+         (progn
+           (make-directory ,dirvar)
+           ,(when inside-git
+              `(let ((default-directory ,dirvar))
+                 (call-process-shell-command "git init")))
+           ,@body)
+       (delete-directory ,dirvar t))))
 
 (ert-deftest test-project-rootfile-try-detect ()
   (project-rootfile-tests-with-setup (dir)
@@ -66,17 +68,13 @@
       (should (string= (project-root project) (file-name-as-directory dir))))))
 
 (ert-deftest test-project-rootfile-try-detect/inside-git ()
-  (project-rootfile-tests-with-setup (dir)
-    (let ((default-directory dir))
-      (call-process-shell-command "git init"))
+  (project-rootfile-tests-with-setup (dir :inside-git t)
     (make-empty-file (expand-file-name "Makefile" dir))
     (let ((project (project-rootfile-try-detect dir)))
       (should (equal (project-rootfile-base project) (project-try-vc dir))))))
 
 (ert-deftest test-project-rootfile-try-detect/git-monorepo ()
-  (project-rootfile-tests-with-setup (dir)
-    (let ((default-directory dir))
-      (call-process-shell-command "git init"))
+  (project-rootfile-tests-with-setup (dir :inside-git t)
     (let ((sub-project1-dir (expand-file-name "sub-project1" dir))
           (sub-project2-dir (expand-file-name "sub-project2" dir)))
       (make-empty-file (expand-file-name "Makefile" sub-project1-dir))
@@ -103,9 +101,7 @@
       (should (member "*~" (project-ignores project dir))))))
 
 (ert-deftest test-project-rootfile/project-ignores/inside-git ()
-  (project-rootfile-tests-with-setup (dir)
-    (let ((default-directory dir))
-      (call-process-shell-command "git init"))
+  (project-rootfile-tests-with-setup (dir :inside-git t)
     (make-empty-file (expand-file-name "Makefile" dir))
     (let ((project (project-rootfile-try-detect dir))
           (ignore (make-temp-name "ignore-")))
@@ -122,13 +118,20 @@
       (should (equal (project-files project (list dir)) (list (expand-file-name "Makefile" dir)))))))
 
 (ert-deftest test-project-rootfile/project-files/inside-git ()
-  (project-rootfile-tests-with-setup (dir)
-    (let ((default-directory dir))
-      (call-process-shell-command "git init"))
+  (project-rootfile-tests-with-setup (dir :inside-git t)
     (make-empty-file (expand-file-name "Makefile" dir))
     (let ((project (project-rootfile-try-detect dir)))
       (should (equal (project-files project) (list (expand-file-name "Makefile" dir))))
       (should (equal (project-files project (list dir)) (list (expand-file-name "Makefile" dir)))))))
+
+(ert-deftest test-project-rootfile/project-files/git-monorepo ()
+  (project-rootfile-tests-with-setup (dir :inside-git t)
+    (let ((sub-project-dir (expand-file-name "sub-project" dir)))
+      (make-empty-file (expand-file-name "README.md" dir))
+      (make-empty-file (expand-file-name "Makefile" sub-project-dir))
+
+      (let ((project (project-rootfile-try-detect sub-project-dir)))
+        (should (equal (project-files project) (list (expand-file-name "Makefile" sub-project-dir))))))))
 
 (provide 'project-rootfile-tests)
 ;;; project-rootfile-tests.el ends here
