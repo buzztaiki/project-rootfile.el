@@ -124,5 +124,14 @@
       (should (equal (project-files project) (list (expand-file-name "Makefile" dir))))
       (should (equal (project-files project (list dir)) (list (expand-file-name "Makefile" dir)))))))
 
+(ert-deftest test-project-rootfile/project-files/git-monorepo ()
+  (project-rootfile-tests-with-setup (dir :inside-git t)
+    (let ((sub-project-dir (expand-file-name "sub-project" dir)))
+      (make-empty-file (expand-file-name "README.md" dir))
+      (make-empty-file (expand-file-name "Makefile" sub-project-dir))
+
+      (let ((project (project-rootfile-try-detect sub-project-dir)))
+        (should (equal (project-files project) (list (expand-file-name "Makefile" sub-project-dir))))))))
+
 (provide 'project-rootfile-tests)
 ;;; project-rootfile-tests.el ends here
