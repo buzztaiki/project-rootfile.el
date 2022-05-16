@@ -103,11 +103,14 @@
     (let ((project-find-functions '(project-rootfile-try-detect)))
       (should (project-current nil dir)))))
 
-(ert-deftest test-project-rootfile/project-ignores ()
+(ert-deftest test-project-rootfile/project-ignores/plain ()
   (project-rootfile-tests-with-setup (dir)
     (make-empty-file (expand-file-name "Makefile" dir))
-    (let ((project (project-rootfile-try-detect dir)))
-      (should (member "*~" (project-ignores project dir))))))
+    (let* ((project (project-rootfile-try-detect dir))
+           (ignore (make-temp-name "ignore-"))
+           (project-rootfile-plain-ignores (list ignore)))
+      (should (member "*~" (project-ignores project dir)))
+      (should (member ignore (project-ignores project dir))))))
 
 (ert-deftest test-project-rootfile/project-ignores/inside-git ()
   (project-rootfile-tests-with-setup (dir :inside-git t)
