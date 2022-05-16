@@ -86,12 +86,15 @@
     "go.mod"                                                ; Go
     )
   "A list of files considered to mark the root of a project."
-  :group 'project-rootfile
   :type '(repeat :type string))
 
 (cl-defstruct (project-rootfile-plain (:conc-name project-rootfile-plain--))
   "Project backend for plain (outside VCS) project."
   (root nil :documentation "Root directory of this project."))
+
+(defcustom project-rootfile-plain-ignores nil
+  "List of patterns to add to `project-ignores' for `project-rootfile-plain'."
+  :type '(repeat string))
 
 ;;;###autoload
 (defun project-rootfile-try-detect (dir)
@@ -128,6 +131,12 @@ If STOP-DIR is specified, return nil if DIR is not a subdirectory of it."
   (cl-defmethod project-roots ((project project-rootfile-plain))
     "Return the list containing the current PROJECT root."
     (list (project-rootfile-plain--root project))))
+
+(cl-defmethod project-ignores ((_project project-rootfile-plain) _dir)
+  "Return the list of glob patterns to ignore."
+  (append
+   (cl-call-next-method)
+   project-rootfile-plain-ignores))
 
 (provide 'project-rootfile)
 ;;; project-rootfile.el ends here
