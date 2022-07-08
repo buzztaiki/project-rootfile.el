@@ -49,6 +49,7 @@
 ;;; Code:
 
 (require 'project)
+(require 'cl-lib)
 
 (defgroup project-rootfile nil
   "Extension of `project' to detect project root with root file (e.g. Gemfile)."
