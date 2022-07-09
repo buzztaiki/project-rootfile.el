@@ -6,6 +6,7 @@ default: compile test
 	emacs -Q -batch -L . --eval '(setq byte-compile-error-on-warn t)' -f batch-byte-compile $<
 
 .PHONY: clean
+clean:
 	rm *.elc
 
 .PHONY: compile
