@@ -87,7 +87,7 @@
     "go.mod"                                                ; Go
     )
   "A list of files considered to mark the root of a project."
-  :type '(repeat :type string))
+  :type '(repeat string))
 
 (cl-defstruct (project-rootfile-plain (:conc-name project-rootfile-plain--))
   "Project backend for plain (outside VCS) project."
