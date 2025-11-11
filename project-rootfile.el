@@ -103,7 +103,7 @@
 Search a root file upwards from DIR and return project instance if found."
   (let* ((vc-project (project-try-vc dir))
          (stop-dir (and vc-project (project-rootfile--project-root vc-project))))
-    (when-let (root (locate-dominating-file dir (lambda (d) (project-rootfile--root-p d stop-dir))))
+    (when-let* ((root (locate-dominating-file dir (lambda (d) (project-rootfile--root-p d stop-dir)))))
       (pcase vc-project
         ((pred null) (make-project-rootfile-plain :root root))
         (`(vc ,backend ,_vc-root) (list 'vc backend root))
