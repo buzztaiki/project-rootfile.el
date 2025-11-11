@@ -19,11 +19,12 @@
 
 ;;; Commentary:
 
-;; 
+;;
 
 ;;; Code:
 
 (require 'ert)
+(require 'vc)                           ; to register vc callbacks
 (require 'project-rootfile)
 
 
@@ -46,7 +47,7 @@
 
 (defun project-rootfile-tests-root-equal (project dir)
   "Return non-nil if root of PROJECT is DIR."
-  (string= (project-rootfile--project-root project) (file-name-as-directory dir)))
+  (file-equal-p (project-rootfile--project-root project) (file-name-as-directory dir)))
 
 (ert-deftest test-project-rootfile-try-detect ()
   (project-rootfile-tests-with-setup (dir)
