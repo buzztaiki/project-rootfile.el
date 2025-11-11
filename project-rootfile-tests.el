@@ -105,6 +105,9 @@
       (should (member "ignore" (project-ignores project dir))))))
 
 (ert-deftest test-project-rootfile/project-ignores/inside-git ()
+  ;; skip when emacs29. see https://github.com/emacs-mirror/emacs/commit/c640e978874385f9774c2903b97677406bee97a2
+  (skip-unless (not (emacs-major-version emacs-major-version 29)))
+
   (project-rootfile-tests-with-setup (dir :inside-git t :touch "Makefile")
     (let ((project (project-rootfile-try-detect dir)))
       (should (not (member "ignore" (project-ignores project dir))))
