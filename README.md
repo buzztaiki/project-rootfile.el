@@ -8,6 +8,15 @@ It is very smiller to [Projectile](https://github.com/bbatsov/projectile)'s `pro
 
 If you want to learn more about `project.el`, see info node [(emacs) Projects](https://www.gnu.org/software/emacs/manual/html_node/emacs/Projects.html).
 
+> [!NOTE]
+> The variable `project-vc-extra-root-markers` was introduced in Emacs 29. This new variable provides functionality that is nearly identical to `project-rootfile`, and its use is now generally recommended where applicable.
+> 
+> If you wish to set a default value for `project-vc-extra-root-markers`, you can do so by implementing the following:
+> 
+> ```emacs-lisp
+> (setopt project-vc-extra-root-markers
+>         (seq-uniq (append project-rootfile-list project-vc-extra-root-markers)))
+> ```
 
 ## Usage
 
